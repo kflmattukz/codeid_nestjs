@@ -57,7 +57,7 @@ export class RegionsService {
     return await this.regionsRepository.remove(region);
   }
 
-  private async checkId(id: number) {
+  private async checkId(id: number): Promise<Regions> {
     try {
       return await this.findOne(id);
     } catch (err) {
