@@ -25,6 +25,11 @@ export class EmployeesController {
     return this.employeesService.getById(id);
   }
 
+  @Get('/history/:id')
+  async getHoistory(@Param('id') id: number) {
+    return this.employeesService.history(id);
+  }
+
   @Post()
   async create(@Body() fields: CreateEmployeeDto) {
     return this.employeesService.create(fields);

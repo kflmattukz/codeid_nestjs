@@ -1,20 +1,43 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Employees } from 'output/entities/Employees';
+import { JobHistory } from 'src/entities/JobHistory';
 import { Repository } from 'typeorm';
 
 @Injectable()
 export class EmployeesService {
   constructor(
     @InjectRepository(Employees) private employeesRepo: Repository<Employees>,
+    @InjectRepository(JobHistory) private jhRepo: Repository<JobHistory>,
   ) {}
 
   async getAll(): Promise<Employees[]> {
-    return await this.employeesRepo.find();
+    return await this.employeesRepo.find({
+      select: {
+        firstName: true,
+        lastName: true,
+        email: true,
+        phoneNumber: true,
+        hireDate: true,
+        salary: true,
+        commissionPct: true,
+        xempId: true,
+      },
+    });
   }
 
   async getById(id: number): Promise<Employees> {
     return await this.employeesRepo.findOneByOrFail({ employeeId: id });
+  }
+
+  async history(id: number): Promise<JobHistory[]> {
+    return await this.jhRepo.find({
+      relations: {
+        job: true,
+        department: true,
+      },
+      where: { employeeId: id },
+    });
   }
 
   async create(attrs: Partial<Employees>): Promise<Employees> {

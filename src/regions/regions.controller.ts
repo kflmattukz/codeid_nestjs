@@ -62,7 +62,11 @@ export class RegionsController {
       files.regionFile[0].filename + '.' + files.regionFile[0].originalname;
     const regionPhoto =
       files.regionPhoto[0].filename + '.' + files.regionPhoto[0].originalname;
-    return this.regionService.update(id, regionName, regionFile, regionPhoto);
+    return this.regionService.update(id, {
+      regionName,
+      regionFile,
+      regionPhoto,
+    });
   }
 
   @Delete(':id')

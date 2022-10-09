@@ -46,38 +46,23 @@ export class RegionsService {
     }
   }
 
-  async update(
-    id: number,
-    regionName: string,
-    regionFile: string,
-    regionPhoto: string,
-  ) {
-    try {
-      const region = await this.regionsRepository.update(id, {
-        regionName,
-        regionFile,
-        regionPhoto,
-      });
-      if (region) {
-        return { msg: 'update region success !' };
-      } else {
-        return { msg: 'update region failed !' };
-      }
-    } catch (error) {
-      return error.message;
-    }
+  async update(id: number, attrs: Partial<Regions>): Promise<Regions> {
+    const region = await this.checkId(id);
+    Object.assign(region, attrs);
+    return await this.regionsRepository.save(region);
   }
 
-  async delete(id: number) {
+  async delete(id: number): Promise<Regions> {
+    const region = await this.checkId(id);
+    return await this.regionsRepository.remove(region);
+  }
+
+  private async checkId(id: number) {
     try {
-      const region = await this.regionsRepository.delete(id);
-      if (region) {
-        return { msg: 'delete region success !' };
-      } else {
-        return { msg: 'delete region failed !' };
-      }
-    } catch (error) {
-      return error.message;
+      return await this.findOne(id);
+    } catch (err) {
+      throw new Error('region not found' + err.message);
+      // return { msg: 'Region not found', error: err.message };
     }
   }
 }
