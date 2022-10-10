@@ -40,12 +40,12 @@ export class CountriesService {
 
   async update(id: string, attrs: Partial<Countries>): Promise<Countries> {
     id = id.toUpperCase();
-    const country = await this.getById(id);
+    const country = await this.getById(id); // Panggil entity by Id
     if (!country) {
       throw new Error('Country not found');
     }
-    Object.assign(country, attrs);
-    return this.coutriesRepo.save(country);
+    Object.assign(country, attrs); // Gabungkan entity dengan data baru
+    return this.coutriesRepo.save(country); // save entity baru
   }
 
   async delete(id: string): Promise<Countries> {

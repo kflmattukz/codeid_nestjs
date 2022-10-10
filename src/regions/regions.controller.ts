@@ -4,8 +4,8 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
-  Put,
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
@@ -38,17 +38,19 @@ export class RegionsController {
       regionPhoto?: Express.Multer.File[];
     },
   ) {
-    const regionFile =
-      files.regionFile[0].filename + '.' + files.regionFile[0].originalname;
-    const regionPhoto =
-      files.regionPhoto[0].filename + '.' + files.regionPhoto[0].originalname;
+    // const regionFile =
+    //   files.regionFile[0].filename + '.' + files.regionFile[0].originalname;
+    // const regionPhoto =
+    //   files.regionPhoto[0].filename + '.' + files.regionPhoto[0].originalname;
+    const regionFile = files.regionFile[0].originalname;
+    const regionPhoto = files.regionPhoto[0].originalname;
     return this.regionService.create(regionName, regionFile, regionPhoto);
   }
 
   @UseInterceptors(
     FileFieldsInterceptor([{ name: 'regionFile' }, { name: 'regionPhoto' }]),
   )
-  @Put(':id')
+  @Patch(':id')
   update(
     @Param('id') id: number,
     @Body('regionName') regionName: string,
@@ -58,10 +60,12 @@ export class RegionsController {
       regionPhoto?: Express.Multer.File[];
     },
   ) {
-    const regionFile =
-      files.regionFile[0].filename + '.' + files.regionFile[0].originalname;
-    const regionPhoto =
-      files.regionPhoto[0].filename + '.' + files.regionPhoto[0].originalname;
+    // const regionFile =
+    //   files.regionFile[0].filename + '.' + files.regionFile[0].originalname;
+    // const regionPhoto =
+    //   files.regionPhoto[0].filename + '.' + files.regionPhoto[0].originalname;
+    const regionFile = files.regionFile[0].originalname;
+    const regionPhoto = files.regionPhoto[0].originalname;
     return this.regionService.update(id, {
       regionName,
       regionFile,
@@ -70,7 +74,7 @@ export class RegionsController {
   }
 
   @Delete(':id')
-  delete(id: number) {
+  delete(@Param('id') id: number) {
     return this.regionService.delete(id);
   }
 }

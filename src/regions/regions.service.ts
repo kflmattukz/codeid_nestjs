@@ -35,7 +35,7 @@ export class RegionsService {
     regionPhoto: string,
   ): Promise<Regions> {
     try {
-      const region = await this.regionsRepository.create({
+      const region = this.regionsRepository.create({
         regionName,
         regionFile,
         regionPhoto,

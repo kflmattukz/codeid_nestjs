@@ -11,7 +11,24 @@ export class DepartmentsService {
   ) {}
 
   async getAll(): Promise<Departments[]> {
-    return await this.departmentsRepo.find();
+    return await this.departmentsRepo.find({
+      relations: ['manager', 'location'],
+      select: {
+        departmentName: true,
+        manager: {
+          firstName: true,
+          lastName: true,
+          email: true,
+          phoneNumber: true,
+        },
+        location: {
+          streetAddress: true,
+          postalCode: true,
+          city: true,
+          stateProvince: true,
+        },
+      },
+    });
   }
 
   async getById(id: number): Promise<Departments> {
