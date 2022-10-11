@@ -8,11 +8,11 @@ export class CountriesService {
   constructor(
     @InjectRepository(Countries) private coutriesRepo: Repository<Countries>,
   ) {}
-
+  // return Promise Countries array << entity
   async getAll(): Promise<Countries[]> {
     return await this.coutriesRepo.find();
   }
-
+  // return Promise Countries singular << entity
   async getById(id: string): Promise<Countries> {
     id = id.toUpperCase();
     try {
@@ -25,6 +25,7 @@ export class CountriesService {
     }
   }
 
+  // cuz we using save function it's gonna return Promise Countries Singular << entity
   async create(
     countryId: string,
     countryName: string,
@@ -40,12 +41,15 @@ export class CountriesService {
 
   async update(id: string, attrs: Partial<Countries>): Promise<Countries> {
     id = id.toUpperCase();
-    const country = await this.getById(id); // Panggil entity by Id
+    const country = await this.getById(id); // Masukkan entity Country by Id
+    // check apakah ada entity yg dikembalikan, jika tidak throw Error
     if (!country) {
       throw new Error('Country not found');
     }
-    Object.assign(country, attrs); // Gabungkan entity dengan data baru
-    return this.coutriesRepo.save(country); // save entity baru
+    // Gabungkan entity dengan data baru
+    Object.assign(country, attrs);
+    // Update/save modified entity
+    return this.coutriesRepo.save(country);
   }
 
   async delete(id: string): Promise<Countries> {

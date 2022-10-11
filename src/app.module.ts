@@ -8,6 +8,12 @@ import { EmployeesModule } from './employees/employees.module';
 import { DepartmentsModule } from './departments/departments.module';
 import { JobsModule } from './jobs/jobs.module';
 import { JhModule } from './jh/jh.module';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
+import { AppController } from './app.controller';
+import { AuthService } from './auth/auth.service';
+import { JwtService } from '@nestjs/jwt';
+import { JwtStrategy } from './auth/jwt.strategy';
 
 @Module({
   imports: [
@@ -19,6 +25,10 @@ import { JhModule } from './jh/jh.module';
     DepartmentsModule,
     JobsModule,
     JhModule,
+    AuthModule,
+    UsersModule,
   ],
+  controllers: [AppController],
+  providers: [AuthService, JwtService, JwtStrategy],
 })
 export class AppModule {}
