@@ -1,4 +1,12 @@
-import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  AfterInsert,
+  AfterRemove,
+  AfterUpdate,
+  Column,
+  Entity,
+  Index,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Index('users_pkey', ['userId'], { unique: true })
 @Entity('users', { schema: 'public' })
@@ -10,6 +18,7 @@ export class Users {
     name: 'user_name',
     nullable: true,
     length: 255,
+    unique: true,
   })
   userName: string | null;
 
@@ -17,6 +26,7 @@ export class Users {
     name: 'user_email',
     nullable: true,
     length: 255,
+    unique: true,
   })
   userEmail: string | null;
 
@@ -26,4 +36,19 @@ export class Users {
     length: 255,
   })
   userPassword: string | null;
+
+  @AfterInsert()
+  insertUser() {
+    console.log('User created with id: ', this.userId);
+  }
+
+  @AfterUpdate()
+  updateUser() {
+    console.log('User update with id: ', this.userId);
+  }
+
+  @AfterRemove()
+  removeUser() {
+    console.log('User created with id: ', this.userId);
+  }
 }
