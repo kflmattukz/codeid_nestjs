@@ -33,6 +33,14 @@ export class JhController {
     return this.jhService.getByJobId(id);
   }
 
+  @Get(':employeeId/:jobId')
+  getOne(@Param('employeeId') employeeId: number, @Param('jobId') jobId: string) {
+    let Id = jobId.split('_');
+    Id = Id.map((a) => a.toUpperCase());
+    jobId = Id.join('_');
+    return this.jhService.getOne(employeeId, jobId)
+  }
+
   @Post()
   create(@Body() fields: CreateJhDto) {
     return this.jhService.create(

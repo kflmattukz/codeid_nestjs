@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JobHistory } from 'output/entities/JobHistory';
 import { Repository } from 'typeorm';
@@ -10,15 +10,61 @@ export class JhService {
   ) {}
 
   async getAll(): Promise<JobHistory[]> {
-    return await this.jhRepo.find();
+    return await this.jhRepo.find({
+      relations: ['employee', 'job', 'department'],
+      select: {
+        employee: {
+          employeeId: true,
+          firstName: true,
+          lastName: true
+        },
+        job: { jobId: true, jobTitle: true },
+        department: { departmentId: true, departmentName: true },
+        startDate: true,
+        endDate: true
+      }
+    });
+  }
+
+  async getOne(employeeId: number, jobId: string): Promise<JobHistory> {
+    console.log(employeeId, jobId);
+    return await this.checkId(employeeId, jobId);
   }
 
   async getByEmployeeId(id: number): Promise<JobHistory[]> {
-    return await this.jhRepo.find({ where: { employee: { employeeId: id } } });
+    return await this.jhRepo.find({ 
+      where: { employee: { employeeId: id } },
+      relations: ['employee', 'job', 'department'],
+        select: {
+          employee: {
+            employeeId: true,
+            firstName: true,
+            lastName: true
+          },
+          job: { jobId: true, jobTitle: true },
+          department: { departmentId: true, departmentName: true },
+          startDate: true,
+          endDate: true
+        } 
+    });
   }
 
   async getByJobId(id: string): Promise<JobHistory[]> {
-    return await this.jhRepo.find({ where: { job: { jobId: id } } });
+    return await this.jhRepo.find({
+      where: { job: { jobId: id } },
+      relations: ['employee', 'job', 'department'],
+        select: {
+          employee: {
+            employeeId: true,
+            firstName: true,
+            lastName: true
+          },
+          job: { jobId: true, jobTitle: true },
+          department: { departmentId: true, departmentName: true },
+          startDate: true,
+          endDate: true
+        } 
+    });
   }
 
   async create(
@@ -55,12 +101,24 @@ export class JhService {
 
   async checkId(employeeId: number, jobId: string): Promise<JobHistory> {
     try {
-      return await this.jhRepo.findOneOrFail({
+      return await this.jhRepo.findOne({
         where: { employee: { employeeId: employeeId }, job: { jobId: jobId } },
+        relations: ['employee', 'job', 'department'],
+        select: {
+          employee: {
+            employeeId: true,
+            firstName: true,
+            lastName: true
+          },
+          job: { jobId: true, jobTitle: true },
+          department: { departmentId: true, departmentName: true },
+          startDate: true,
+          endDate: true
+        } 
       });
     } catch (err) {
-      throw new Error(
-        'Job History not found, please provite employee & job id',
+      throw new NotFoundException(
+        'Job History not found, please provite employee id & job id',
       );
     }
   }
