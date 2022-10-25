@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Users } from 'src/entities/Users';
 import { Repository } from 'typeorm';
@@ -7,32 +7,30 @@ import { Repository } from 'typeorm';
 export class UsersService {
   constructor(@InjectRepository(Users) private usersRepo: Repository<Users>) {}
 
-  async create(
-    userName: string,
-    userEmail: string,
-    userPassword: string,
-  ): Promise<Users> {
-    // Create untuk buat Entity
-    const user = await this.usersRepo.create({
-      userName,
-      userEmail,
-      userPassword,
+  async find(): Promise<Users[]> {
+    return await this.usersRepo.find({
+      select: { userName: true, userEmail: true },
     });
-    //
-    return await this.usersRepo.save(user);
+  }
+
+  async findOne(id: number): Promise<Users> {
+    return await this.findUser(id);
   }
 
   async update(userId: number, attrs: Partial<Users>): Promise<Users> {
-    // Ambil Entity user yg mau kita update
-    const user = await this.usersRepo.findOneBy({ userId });
-    // chech apakah entity ada ?
-    if (!user) {
-      // jika tidak ada lempar error
-      throw new Error('User not found');
-    }
-    // jika ada update data baru
+    const user = await this.findUser(userId);
     Object.assign(user, attrs);
-    // save data baru
     return await this.usersRepo.save(user);
+  }
+
+  async remove(id: number): Promise<Users> {
+    const user = await this.findUser(id);
+    return await this.usersRepo.remove(user);
+  }
+
+  async findUser(id: number): Promise<Users> {
+    const user = await this.usersRepo.findOneBy({ userId: id });
+    if (!user) throw new NotFoundException('User not found');
+    return user;
   }
 }

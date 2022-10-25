@@ -1,5 +1,4 @@
-import { Body, Controller, Param, Patch, Post } from '@nestjs/common';
-import { CreateUserDto } from './dtos/create-user.dto';
+import { Body, Controller, Delete, Get, Param, Patch } from '@nestjs/common';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { UsersService } from './users.service';
 
@@ -7,22 +6,23 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post('/signup')
-  signup(@Body() fields: CreateUserDto) {
-    return this.usersService.create(
-      fields.userName,
-      fields.userEmail,
-      fields.userPassword,
-    );
+  @Get()
+  findAll() {
+    return this.usersService.find();
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: number) {
+    return this.usersService.findOne(id);
   }
 
   @Patch(':id')
-  async update(@Param('id') id: number, @Body() attrs: UpdateUserDto) {
-    const user = await this.usersService.update(id, attrs);
-    console.log(user);
-    return {
-      msg: 'Update success',
-      user,
-    };
+  update(@Param('id') id: number, @Body() fields: UpdateUserDto) {
+    return this.usersService.update(id, fields);
+  }
+
+  @Delete()
+  remove(@Param('id') id: number) {
+    return this.usersService.remove(id);
   }
 }

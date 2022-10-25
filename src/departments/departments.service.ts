@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Departments } from 'src/entities/Departments';
 import { Repository } from 'typeorm';
+import { UpdateDepartmentDto } from './dtos/update-department.dto';
 
 @Injectable()
 export class DepartmentsService {
@@ -14,14 +15,17 @@ export class DepartmentsService {
     return await this.departmentsRepo.find({
       relations: ['manager', 'location'],
       select: {
+        departmentId: true,
         departmentName: true,
         manager: {
+          employeeId: true,
           firstName: true,
           lastName: true,
           email: true,
           phoneNumber: true,
         },
         location: {
+          locationId: true,
           streetAddress: true,
           postalCode: true,
           city: true,
@@ -32,7 +36,7 @@ export class DepartmentsService {
   }
 
   async getById(id: number): Promise<Departments> {
-    return await this.departmentsRepo.findOneByOrFail({ departmentId: id });
+    return await this.checkId(id);
   }
 
   async create(
@@ -48,9 +52,12 @@ export class DepartmentsService {
     return this.departmentsRepo.save(department);
   }
 
-  async update(id: number, attrs: Partial<Departments>): Promise<Departments> {
+  async update(id: number, attrs: Partial<UpdateDepartmentDto>): Promise<Departments> {
     const department = await this.checkId(id);
     Object.assign(department, attrs);
+    // TODO: update the attrs to auto match department entity
+    department.manager.employeeId = attrs.managerId;
+    department.location.locationId = attrs.locationId;
     return this.departmentsRepo.save(department);
   }
 
@@ -61,7 +68,20 @@ export class DepartmentsService {
 
   private async checkId(id: number) {
     try {
-      return await this.departmentsRepo.findOneByOrFail({ departmentId: id });
+      return await this.departmentsRepo.findOne({ 
+        where: { departmentId: id },
+        relations: ['manager', 'location'],
+        select: {
+          departmentId: true,
+          departmentName: true,
+          manager: {
+            employeeId: true,
+          },
+          location: {
+            locationId: true,
+          },
+      },
+      });
     } catch (err) {
       throw new Error('Department not found, please provite the right id');
     }

@@ -8,7 +8,14 @@ export class JobsService {
   constructor(@InjectRepository(Jobs) private jobsRepo: Repository<Jobs>) {}
 
   async getAll(): Promise<Jobs[]> {
-    return await this.jobsRepo.find();
+    return await this.jobsRepo.find({
+      select: {
+        jobId: true,
+        jobTitle: true,
+        maxSalary: true,
+        minSalary: true
+      }
+    });
   }
 
   async getOne(id: string): Promise<Jobs> {

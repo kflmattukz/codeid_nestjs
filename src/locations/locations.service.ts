@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Locations } from 'src/entities/Locations';
 import { Repository } from 'typeorm';
+import { UpdateLocationDto } from './dtos/update-location.dto';
 
 @Injectable()
 export class LocationsService {
@@ -11,14 +12,35 @@ export class LocationsService {
   ) {}
 
   async getAll(): Promise<Locations[]> {
-    return this.locationsRepository.find();
+    return this.locationsRepository.find({
+      relations: ['country'],
+      select: {
+        locationId: true,
+        streetAddress: true,
+        postalCode: true,
+        city: true,
+        stateProvince: true,
+        country: {
+          countryId: true,
+          countryName: true
+        }
+      }
+    });
   }
 
   async getById(id: number): Promise<Locations> {
     try {
-      const location = await this.locationsRepository.findOneByOrFail({
-        locationId: id,
-      });
+      const location = await this.locationsRepository.findOne({ where: { locationId: id }, relations: ['country'],
+      select: {
+        locationId: true,
+        streetAddress: true,
+        postalCode: true,
+        city: true,
+        stateProvince: true,
+        country: {
+          countryId: true,
+        }
+      } });
       return location;
     } catch (err) {
       return err;
@@ -45,12 +67,13 @@ export class LocationsService {
     return this.locationsRepository.save(location);
   }
 
-  async update(id: number, attrs: Partial<Locations>): Promise<Locations> {
+  async update(id: number, attrs: Partial<UpdateLocationDto>): Promise<Locations> {
     const location = await this.getById(id);
     if (!location) {
       throw new Error('Location not found please provite the rigth id');
     }
     Object.assign(location, attrs);
+    location.country.countryId = attrs.countryId;
     return await this.locationsRepository.save(location);
   }
 

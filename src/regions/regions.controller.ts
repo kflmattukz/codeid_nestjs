@@ -7,10 +7,8 @@ import {
   Patch,
   Post,
   UploadedFiles,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { RegionsService } from './regions.service';
 
@@ -40,19 +38,15 @@ export class RegionsController {
       regionPhoto?: Express.Multer.File[];
     },
   ) {
-    // const regionFile =
-    //   files.regionFile[0].filename + '.' + files.regionFile[0].originalname;
-    // const regionPhoto =
-    //   files.regionPhoto[0].filename + '.' + files.regionPhoto[0].originalname;
     const regionFile = files.regionFile[0].originalname;
     const regionPhoto = files.regionPhoto[0].originalname;
     return this.regionService.create(regionName, regionFile, regionPhoto);
   }
 
+  @Patch(':id')
   @UseInterceptors(
     FileFieldsInterceptor([{ name: 'regionFile' }, { name: 'regionPhoto' }]),
   )
-  @Patch(':id')
   update(
     @Param('id') id: number,
     @Body('regionName') regionName: string,
@@ -62,12 +56,8 @@ export class RegionsController {
       regionPhoto?: Express.Multer.File[];
     },
   ) {
-    // const regionFile =
-    //   files.regionFile[0].filename + '.' + files.regionFile[0].originalname;
-    // const regionPhoto =
-    //   files.regionPhoto[0].filename + '.' + files.regionPhoto[0].originalname;
-    const regionFile = files.regionFile[0].originalname;
-    const regionPhoto = files.regionPhoto[0].originalname;
+    const regionFile = files.regionFile[0].originalname || undefined;
+    const regionPhoto = files.regionPhoto[0].originalname || undefined;
     return this.regionService.update(id, {
       regionName,
       regionFile,

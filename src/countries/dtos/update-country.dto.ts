@@ -1,4 +1,4 @@
-import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 export class UpdateCountryDto {
   @IsString()
@@ -9,7 +9,6 @@ export class UpdateCountryDto {
   @IsOptional()
   countryName: string;
 
-  @IsNumber()
   @IsOptional()
   regionId: number;
 }
